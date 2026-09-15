@@ -91,6 +91,10 @@
     <string name="home_automation_regenerate_token">Regenerate token?</string>
     <string name="home_automation_regenerate_token_message">You will need to reconfigure your intents with the new token.</string>
 
+    <!-- Home - Stealth mode -->
+    <string name="home_stealth_title">Hide Shizuku from other apps</string>
+    <string name="home_stealth_description">Note: Enabling this feature may cause apps that rely on Shizuku to stop functioning correctly.</string>
+
     <!-- Home - Learn more -->
     <string name="home_learn_more_title">Developer guide</string>
     <string name="home_learn_more_description">Learn how to develop with Shizuku</string>
@@ -98,6 +102,13 @@
     <!-- Home - Adb permissions limited -->
     <string name="home_adb_is_limited_title">You need to take an extra step</string>
     <string name="home_adb_is_limited_description">Your device manufacturer has restricted adb permissions and apps using Shizuku will not work properly.\n\nUsually, this limitation can be lifted by adjusting some options in \"Developer options\". Please read the help for details on how to do this.\n\nYou may need to restart Shizuku for the operation to take effect.</string>
+
+    <!-- Home - Dialogs -->
+    <string name="home_dialog_reboot_required_title">Reboot required</string>
+    <string name="home_dialog_reboot_required_message">A device reboot is required for Shizuku to work properly. To continue, please reboot your device.</string>
+    <string name="home_dialog_duplicate_app_detected_title">Duplicate app detected</string>
+    <string name="home_dialog_duplicate_app_detected_message">Another version of this app is installed on your device. To continue, please uninstall all duplicate versions and reboot your device.</string>
+    <string name="home_dialog_button_exit">Exit</string>
 
     <!-- Application management -->
     <string name="app_management_dialog_adb_is_limited_title">The permission of adb is limited</string>
@@ -117,6 +128,28 @@
     <string name="terminal_tutorial_2_description">Tip: If your terminal app\'s home directory (~) is in the private files directory, placing the files there will allow you to run %1$s without writing the path.\n\nOtherwise, you can create an alias for %2$s in your terminal app\'s %3$s configuration file.</string>
     <string name="terminal_tutorial_3">Open a shell with the following command:</string>
     <string name="rish_description"><![CDATA[With %1$s, you can run shell commands in any terminal app.<p>Tap to learn more about how to use it.]]></string>
+
+    <!-- Stealth -->
+    <string name="stealth_warning_compatibility">Some apps that use Shizuku may not work when Shizuku is hidden because they try to detect if Shizuku is installed.</string>
+    <string name="stealth_warning_compatibility_2">As a workaround, you can temporarily unhide Shizuku, which installs a stub with the original package name. When you are finished, you can re-hide Shizuku.</string>
+    <string name="stealth_warning_compatibility_3">Tap this card to copy a code snippet you can send to the developer so their \"Shizuku installed\" check will work when Shizuku is hidden.</string>
+    <string name="stealth_warning_detection">Some apps may still be able to detect Shizuku even when hidden.</string>
+    <string name="stealth_info_reconfigure">You will need to re-pair and re-configure Shizuku after installing the hidden version.</string>
+    <string name="stealth_info_rish">Rish users: re-export the files after installing the hidden version.</string>
+    <string name="stealth_info_intents">Intent users: update your intents with the new package name.</string>
+    <string name="stealth_info_update">You must update Shizuku through the app when using the hidden version because it has a different signature.</string>
+    <string name="stealth_package_name">Package name (optional)</string>
+    <string name="stealth_package_name_helper_text">If left empty, a random suffix will be added to the package name.</string>
+    <string name="stealth_error_ends_with_period">Package name cannot end with a period.</string>
+    <string name="stealth_error_invalid_characters">Only letters, numbers, and periods are allowed.</string>
+    <string name="stealth_error_needs_two_segments">Package name must have at least two segments.</string>
+    <string name="stealth_error_segment_starts_with_number">Segments cannot start with a number.</string>
+    <string name="stealth_choose_folder_message">Choose a folder where the new APK will be saved.</string>
+    <string name="stealth_uninstall_required">Uninstall required</string>
+    <string name="stealth_uninstall_message">The system will now prompt you to uninstall Shizuku. Then, install the clone.</string>
+    <string name="stealth_uninstall">Uninstall</string>
+    <string name="stealth_hide">Hide</string>
+    <string name="stealth_unhide">Unhide</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
@@ -147,6 +180,8 @@
     <string name="settings_black_night_theme">Black night theme</string>
     <string name="settings_black_night_theme_summary">Use the pure black theme if night mode is enabled</string>
     <string name="settings_support">Support</string>
+    <string name="settings_update_stable">Stable</string>
+    <string name="settings_update_beta">Beta</string>
     <string name="settings_help">Help</string>
     <string name="settings_report_bug">Report a bug</string>
     <string name="settings_advanced">Advanced</string>
@@ -170,6 +205,17 @@
     <string name="snackbar_battery_optimization_home">Battery optimization must be disabled for start on boot/watchdog to work properly.</string>
     <string name="snackbar_battery_optimization_settings">Please disable battery optimization to use this feature.</string>
     <string name="snackbar_action_fix">Fix</string>
+    <string name="snackbar_update_available">A new update is available</string>
+    <string name="snackbar_action_update">Update</string>
+
+    <!-- Updates -->
+    <string name="check_for_updates">Check for updates</string>
+    <string name="update_latest_installed">The latest version is already installed</string>
+    <string name="update_check_failed">Unable to check for updates</string>
+    <string name="update_downloading">Downloading update...</string>
+    <string name="update_download_failed">Failed to download update</string>
+    <string name="update_success">Update successful</string>
+    <string name="update_failed">Update failed</string>
 
     <!-- Toast -->
     <string name="toast_no_email_app">No email app found</string>
@@ -187,6 +233,7 @@
     <string name="action_about">About</string>
     <string name="about_dialog_button_close">Close</string>
     <string name="about_view_source_code"><![CDATA[View source code at %s]]></string>
+    <string name="buy_me_a_coffee">Buy me a coffee</string>
 
     <!-- Start/Stop -->
      <string name="start">Start</string>
@@ -247,6 +294,10 @@
     <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Turn Off Alerts</string>
 
     <!-- Misc -->
+    <string name="success">Success</string>
+    <string name="error">Error</string>
+    <string name="off">Off</string>
+    <string name="choose_folder">Choose folder</string>
     <string name="dialog_cannot_open_browser_title">Can\'t start browser</string>
     <string name="toast_copied_to_clipboard">Copied to clipboard</string>
     <string name="accessibility_service_description">Provides pairing support for devices (e.g., TVs running Android 14+) where notifications or split screen cannot be used.\n\nEnables Shizuku to extract the pairing code from the wireless debugging pairing screen. It will disable itself once the pairing code is found.</string>

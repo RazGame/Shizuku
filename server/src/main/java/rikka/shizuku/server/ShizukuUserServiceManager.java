@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import moe.shizuku.starter.ServiceStarter;
-import rikka.hidden.compat.PackageManagerApis;
+import rikka.shizuku.server.util.Android17Compat;
 import rikka.hidden.compat.UserManagerApis;
 import rikka.shizuku.server.util.UserHandleCompat;
 
@@ -35,6 +35,7 @@ public class ShizukuUserServiceManager extends UserServiceManager {
         return ServiceStarter.commandForUserService(
                 appProcess,
                 ShizukuService.getManagerApplicationInfo().sourceDir,
+                ShizukuService.MANAGER_APPLICATION_ID,
                 token, packageName, classname, processNameSuffix, callingUid, debug);
     }
 
@@ -49,7 +50,7 @@ public class ShizukuUserServiceManager extends UserServiceManager {
                 String newSourceDir = null;
 
                 for (int userId : UserManagerApis.getUserIdsNoThrow()) {
-                    PackageInfo pi = PackageManagerApis.getPackageInfoNoThrow(packageName, 0, userId);
+                    PackageInfo pi = Android17Compat.getPackageInfo(packageName, 0, userId);
                     if (pi != null && pi.applicationInfo != null && pi.applicationInfo.sourceDir != null) {
                         newSourceDir = pi.applicationInfo.sourceDir;
                         break;

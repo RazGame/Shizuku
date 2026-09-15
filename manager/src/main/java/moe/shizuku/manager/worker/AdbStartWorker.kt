@@ -60,7 +60,7 @@ class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWork
 
             val port = tcpPort.takeIf { !EnvironmentUtils.isWifiRequired() } ?: callbackFlow {
                 val adbMdns = AdbMdns(applicationContext, AdbMdns.TLS_CONNECT) { p ->
-                    if (p > 0) trySend(p)
+                    if (p.second > 0) trySend(p.second)
                 }
 
                 var awaitingAuth = false

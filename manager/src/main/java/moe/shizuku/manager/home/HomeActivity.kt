@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 import moe.shizuku.manager.R
 import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.adb.AdbPairingService
@@ -28,9 +29,11 @@ import moe.shizuku.manager.ktx.toHtml
 import moe.shizuku.manager.management.AppsViewModel
 import moe.shizuku.manager.settings.SettingsActivity
 import moe.shizuku.manager.utils.AppIconCache
+import moe.shizuku.manager.utils.CustomTabsHelper
 import moe.shizuku.manager.utils.EnvironmentUtils
 import moe.shizuku.manager.utils.SettingsHelper
 import moe.shizuku.manager.utils.ShizukuStateMachine
+import moe.shizuku.manager.utils.UpdateHelper
 import rikka.core.content.asActivity
 import rikka.core.ktx.unsafeLazy
 import rikka.lifecycle.Status
@@ -67,23 +70,53 @@ abstract class HomeActivity : AppBarActivity() {
             }
         }
 
-        homeModel.shouldShowBatteryOptimizationSnackbar.observe(this) {
-            if (it) {
-                SnackbarHelper.show(
-                    this,
-                    binding.root,
-                    msg = getString(R.string.snackbar_battery_optimization_home),
-                    duration = Snackbar.LENGTH_INDEFINITE,
-                    actionText = getString(R.string.snackbar_action_fix),
-                    action = { SettingsHelper.requestIgnoreBatteryOptimizations(this, null) }
-                )
-            }
+        homeModel.shouldShowRebootDialog.observe(this) { shouldShow ->
+            if (shouldShow) showExitDialog(
+                getString(R.string.home_dialog_reboot_required_title),
+                getString(R.string.home_dialog_reboot_required_message)
+            )
+        }
+
+        homeModel.shouldShowUninstallDialog.observe(this) { shouldShow ->
+            if (shouldShow) showExitDialog(
+                getString(R.string.home_dialog_duplicate_app_detected_title),
+                getString(R.string.home_dialog_duplicate_app_detected_message)
+            )
+        }
+
+        homeModel.shouldShowBatteryOptimizationSnackbar.observe(this) { shouldShow ->
+            if (shouldShow) SnackbarHelper.show(
+                this,
+                binding.root,
+                msg = getString(R.string.snackbar_battery_optimization_home),
+                duration = Snackbar.LENGTH_INDEFINITE,
+                actionText = getString(R.string.snackbar_action_fix),
+                action = { SettingsHelper.requestIgnoreBatteryOptimizations(this, null) }
+            )
         }
         homeModel.checkBatteryOptimization()
 
         appsModel.grantedCount.observe(this) {
             if (it.status == Status.SUCCESS) {
                 adapter.updateData()
+            }
+        }
+
+        lifecycleScope.launch {
+            if (UpdateHelper.isCheckForUpdatesEnabled() && UpdateHelper.isNewUpdateAvailable()) {
+                SnackbarHelper.show(
+                    this@HomeActivity,
+                    binding.root,
+                    msg = getString(R.string.snackbar_update_available),
+                    duration = Snackbar.LENGTH_INDEFINITE,
+                    actionText = getString(R.string.snackbar_action_update),
+                    action = {
+                        lifecycleScope.launch {
+                            UpdateHelper.update()
+                        }
+                    }
+                )
+                UpdateHelper.updateLastPromptedVersion()
             }
         }
 
@@ -131,6 +164,20 @@ abstract class HomeActivity : AppBarActivity() {
         SnackbarHelper.dismiss()
     }
 
+    private fun showExitDialog(title: String, message: String) {
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(R.string.home_dialog_button_exit, null)
+            .setOnDismissListener {
+                this.finishAffinity()
+            }
+            .create()
+
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.show()
+    }
+
     private fun checkServerStatus() {
         homeModel.reload()
     }
@@ -163,6 +210,16 @@ abstract class HomeActivity : AppBarActivity() {
                     )
                 )
                 binding.versionName.text = packageManager.getPackageInfo(packageName, 0).versionName
+
+                binding.btnUpdate.setOnClickListener {
+                    lifecycleScope.launch {
+                        UpdateHelper.checkAndInstallUpdates()
+                    }
+                }
+
+                binding.btnDonate.setOnClickListener {
+                    CustomTabsHelper.launchUrlOrCopy(this, "https://www.buymeacoffee.com/thedjchi")
+                }
 
                 val dialog = MaterialAlertDialogBuilder(this)
                     .setView(binding.root)

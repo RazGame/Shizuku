@@ -1,7 +1,8 @@
-package rikka.shizuku.common.util;
+package rikka.shizuku.server.util;
 
 import android.content.pm.PackageInfo;
 import android.os.Build;
+import android.util.Log;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -10,9 +11,8 @@ import java.util.List;
 
 public final class InstalledPackagesCompat {
 
+    private static final String TAG = "InstalledPackagesCompat";
     private static final int ANDROID_13 = 33;
-    private static final int ANDROID_17 = 37;
-    private static final String PACKAGE_INFO_LIST = "android.content.pm.PackageInfoList";
     private static final String PARCELED_LIST_SLICE = "android.content.pm.ParceledListSlice";
 
     private InstalledPackagesCompat() {
@@ -22,7 +22,8 @@ public final class InstalledPackagesCompat {
         try {
             List<PackageInfo> packages = getInstalledPackages(flags, userId);
             return packages == null ? Collections.emptyList() : packages;
-        } catch (Throwable ignored) {
+        } catch (Throwable e) {
+            Log.w(TAG, "getInstalledPackages failed", e);
             return Collections.emptyList();
         }
     }
@@ -35,6 +36,8 @@ public final class InstalledPackagesCompat {
             Object result = invoke(method, packageManager, (int) flags, userId);
             return result == null ? Collections.emptyList() : (List<PackageInfo>) result;
         } catch (NoSuchMethodException ignored) {
+        } catch (Exception e) {
+            Log.d(TAG, "getInstalledPackagesAsUser failed, falling back to hidden API", e);
         }
 
         Object packageManager = getPackageManager();
@@ -54,11 +57,7 @@ public final class InstalledPackagesCompat {
         }
 
         String resultClassName = result.getClass().getName();
-        if (Build.VERSION.SDK_INT >= ANDROID_17 && PACKAGE_INFO_LIST.equals(resultClassName)) {
-            Object list = result.getClass().getField("list").get(result);
-            return list == null ? Collections.emptyList() : (List<PackageInfo>) list;
-        }
-        if (PARCELED_LIST_SLICE.equals(resultClassName)) {
+        if (resultClassName.startsWith(PARCELED_LIST_SLICE) || resultClassName.contains("PackageInfoList")) {
             Object list = result.getClass().getMethod("getList").invoke(result);
             return list == null ? Collections.emptyList() : (List<PackageInfo>) list;
         }
