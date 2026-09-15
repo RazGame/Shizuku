@@ -11,8 +11,7 @@ import moe.shizuku.manager.utils.SettingsPage
 object SettingsHelper {
 
     fun launchOrHighlightWirelessDebugging(context: Context) {
-        val adbEnabled = Settings.Global.getInt(context.contentResolver, Settings.Global.ADB_ENABLED, 0)
-        if (adbEnabled > 0) {
+        if (EnvironmentUtils.isAdbEnabled()) {
             SettingsPage.Developer.WirelessDebugging.launch(context)
         } else SettingsPage.Developer.HighlightWirelessDebugging.launch(context)
     }

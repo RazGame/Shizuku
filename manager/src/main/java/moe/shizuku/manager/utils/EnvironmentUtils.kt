@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.SystemProperties
+import android.provider.Settings
 import moe.shizuku.manager.ShizukuApplication
 import moe.shizuku.manager.ShizukuSettings
 import com.topjohnwu.superuser.Shell
@@ -39,6 +40,15 @@ object EnvironmentUtils {
 
     fun isRooted(): Boolean {
         return Shell.getShell().isRoot
+    }
+
+    /**
+     * Android 17 redacts Settings.Global.ADB_ENABLED to 0 for third-party apps,
+     * so a 0 there no longer means USB debugging is actually disabled.
+     */
+    fun isAdbEnabled(): Boolean {
+        if (Settings.Global.getInt(appContext.contentResolver, Settings.Global.ADB_ENABLED, 0) > 0) return true
+        return Build.VERSION.SDK_INT >= 37
     }
 
     fun getAdbTcpPort(): Int {
