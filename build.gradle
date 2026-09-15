@@ -11,7 +11,8 @@ idea.module {
 subprojects { subproject ->
     plugins.withId("com.android.base") {
         android {
-            compileSdk = 37
+            // AGP 8.11 can't resolve compileSdk = 37: the SDK ships Android 17 as "android-37.0"
+            compileSdkVersion = "android-37.0"
             buildToolsVersion = "37.0.0"
             ndkVersion = "29.0.13113456"
             defaultConfig {
