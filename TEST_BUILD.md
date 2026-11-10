@@ -1,6 +1,6 @@
 # Rikka-based Android 17 beta build
 
-This is an unofficial local build based on RikkaApps/Shizuku v13.6.0,
+This is an unofficial build based on RikkaApps/Shizuku v13.6.0,
 commit 2650830c, with its original API submodule pinned to 510fc988.
 
 It does not include thedjchi fork additions: self-repackaging, the TV
@@ -32,8 +32,9 @@ Build:
 
 Play Protect has not been tested for this artifact. No guarantee is made that
 it will remove a warning or change Google's existing classification.
-No APK has been uploaded to an external scanner, published, or installed as
-part of producing this test build.
+The r1369 release APK is distributed through GitHub Releases:
+https://github.com/RazGame/Shizuku/releases/tag/v13.6.0.r1369-razgame-rikka-beta
+No APK was uploaded to an external scanner as part of producing this build.
 
 Local validation:
 

@@ -35,7 +35,7 @@ Rikka's original startup flow, basic boot receiver, wireless pairing, and Shizuk
 
 ## Downloads And Validation
 
-[Releases](https://github.com/RazGame/Shizuku/releases) contains the previously published builds. The current Rikka-based r1369 build has been built locally and has not yet been published as a GitHub release.
+Download the current Rikka-based beta, [13.6.0.r1369-razgame-rikka-beta](https://github.com/RazGame/Shizuku/releases/tag/v13.6.0.r1369-razgame-rikka-beta), from GitHub Releases. Older thedjchi-based builds remain in the [release history](https://github.com/RazGame/Shizuku/releases); use the linked r1369 release for the current development line.
 
 Debug and release APKs build successfully. The release signature and manifest were checked; the permission set matches the official Rikka v13.6.0 APK, and the added fork dependencies are absent. The owner reports that the minimal r1368 build works; r1369 only restores the visible app name to Shizuku. The project currently has no manager unit-test sources.
 
