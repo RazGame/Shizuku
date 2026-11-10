@@ -1,6 +1,6 @@
-# Rikka-based Android 17 test build
+# Rikka-based Android 17 beta build
 
-This is an unofficial local test build based on RikkaApps/Shizuku v13.6.0,
+This is an unofficial local build based on RikkaApps/Shizuku v13.6.0,
 commit 2650830c, with its original API submodule pinned to 510fc988.
 
 It does not include thedjchi fork additions: self-repackaging, the TV
@@ -16,9 +16,9 @@ Changes:
 - SDK and target SDK remain 36, as in the reference Rikka release. No extra
   manifest permissions are added. Android 17 local-network permissions are
   required for target 37+ according to Android's developer documentation.
-- The visible app label and version identify this as a RazGame test build.
+- The visible app label is Shizuku; the version retains the unofficial beta suffix.
 
-Signing uses the existing local development certificate for this comparison.
+Signing retains the existing local development certificate for update compatibility.
 The certificate is not Rikka's. This is not a production signing migration.
 The application ID is retained for compatibility with existing Shizuku clients.
 Installing this APK replaces an installed build with the same application ID
@@ -27,7 +27,7 @@ and compatible signature. It cannot update an APK signed with Rikka's key.
 Build:
 
 ```powershell
-.\gradlew.bat :manager:assembleDebug :manager:assembleRelease :manager:testDebugUnitTest -PversionCodeOverride=1368
+.\gradlew.bat :manager:assembleDebug :manager:assembleRelease -PversionCodeOverride=1369
 ```
 
 Play Protect has not been tested for this artifact. No guarantee is made that
@@ -44,8 +44,9 @@ Local validation:
   OkHttp dependency from thedjchi's additional features.
 - Release signature verification succeeded with the existing local development
   certificate. The APK is not debuggable.
-- Device startup, pairing, managed app enumeration, and Play Protect scanning
-  remain to be tested by the user.
+- The user reports that the r1368 build works well. The specific device and
+  Play Protect scan result were not separately confirmed for that report.
+- Revision r1369 restores the visible app label to Shizuku; runtime logic is unchanged.
 
 References:
 
