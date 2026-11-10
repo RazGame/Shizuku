@@ -1,5 +1,48 @@
 # Shizuku
 
+An unofficial fork of the original [RikkaApps/Shizuku](https://github.com/RikkaApps/Shizuku), focused on compatibility fixes for Android 17 while retaining the original app's core functionality.
+
+## Current Version
+
+| Item | Status |
+| --- | --- |
+| Upstream base | Original RikkaApps [v13.6.0](https://github.com/RikkaApps/Shizuku/releases/tag/v13.6.0), commit `2650830c` |
+| Current build | `13.6.0.r1369-razgame-rikka-beta` |
+| App name | Shizuku |
+| Compatibility fixes | Android 17 / API 37 package enumeration and protected ADB settings writes |
+| Compile / target SDK | 36, matching the upstream base |
+| Minimum Android version | Android 7.0 / API 24 |
+
+This is a community-maintained build, not an official RikkaApps release. The patches address the Android 17 changes described below; support for every device and future beta is not implied.
+
+## Android 17 Fixes
+
+- **Installed applications:** Android 17 changes `IPackageManager.getInstalledPackages(...)` from `ParceledListSlice<PackageInfo>` to `PackageInfoList`. [InstalledPackagesCompat](server/src/main/java/rikka/shizuku/server/util/InstalledPackagesCompat.java) uses the device's framework proxy to read the new result. The manager routes these calls through `ShizukuBinderWrapper`; older Android versions retain the original `PackageManagerApis` path, including its `int` / `long` flags compatibility.
+- **Startup with restricted debugging settings:** recent Android 17 builds require the system-only `MANAGE_DEBUGGING` permission for some ADB settings writes, even when `WRITE_SECURE_SETTINGS` is granted. [AdbSettings](manager/src/main/java/moe/shizuku/manager/adb/AdbSettings.kt) handles a denied write so manual and boot startup can continue using an already enabled debugging service. Debugging may need to be enabled manually in Developer options.
+- **Boot discovery:** on Android 17, discovery is attempted even when a debugging setting reports a disabled value to the app.
+
+The app retains upstream's target SDK 36 and the same six declared permissions. No new local-network permission is added to this build. Updating the target SDK to 37 would require separate permission handling and validation.
+
+## Original Project Base
+
+The active `rikka-android17` branch is based directly on RikkaApps/Shizuku. It does not include the additional features from thedjchi's fork:
+
+- Self-repackaging / stealth mode and in-app APK installation or uninstallation.
+- TV pairing AccessibilityService.
+- Watchdog and the fork's extended background-start machinery.
+
+Rikka's original startup flow, basic boot receiver, wireless pairing, and Shizuku API remain. This project previously published thedjchi-based builds; the old `android17-razgame-beta` branch and releases through r1367 belong to that earlier line. The GitHub fork relationship still records that history, but it does not describe the code base of the current branch.
+
+## Downloads And Validation
+
+[Releases](https://github.com/RazGame/Shizuku/releases) contains the previously published builds. The current Rikka-based r1369 build has been built locally and has not yet been published as a GitHub release.
+
+Debug and release APKs build successfully. The release signature and manifest were checked; the permission set matches the official Rikka v13.6.0 APK, and the added fork dependencies are absent. The owner reports that the minimal r1368 build works; r1369 only restores the visible app name to Shizuku. The project currently has no manager unit-test sources.
+
+These checks do not establish a Google Play Protect classification or guarantee that a warning will disappear. Report issues with the exact APK version, Android build, and relevant logs in [this repository](https://github.com/RazGame/Shizuku/issues).
+
+The local APKs use the existing development signing certificate, not Rikka's certificate. They can update compatible RazGame builds but cannot be installed as an update over an official APK signed by Rikka. No production signing-key migration has been performed.
+
 ## Background
 
 When developing apps that requires root, the most common method is to run some commands in the su shell. For example, there is an app that uses the `pm enable/disable` command to enable/disable components.
@@ -13,9 +56,9 @@ This method has very big disadvantages:
 
 Shizuku uses a completely different way. See detailed description below.
 
-## User guide & Download
+## Upstream User Guide
 
-<https://shizuku.rikka.app/>
+The original project's user guide is available at <https://shizuku.rikka.app/>. Downloads from that site are official upstream builds, not builds from this fork.
 
 ## How does Shizuku work?
 
@@ -69,8 +112,19 @@ https://github.com/RikkaApps/Shizuku-API#migration-guide-for-existing-applicatio
 
 ### Build
 
-- Clone with `git clone --recurse-submodules`
-- Run gradle task `:manager:assembleDebug` or `:manager:assembleRelease`
+Use JDK 21, Android SDK Platform 36, Build Tools 36.0.0, NDK 29.0.13113456, and CMake 3.31.6. Use the project's Gradle wrapper (8.14).
+
+```shell
+git clone --recurse-submodules https://github.com/RazGame/Shizuku.git
+cd Shizuku
+./gradlew :manager:assembleDebug :manager:assembleRelease -PversionCodeOverride=1369
+```
+
+On Windows, use `gradlew.bat`. Set `ANDROID_HOME` or configure `sdk.dir` in your untracked `local.properties`. Signing can be configured with an untracked `signing.properties`; without it, the project falls back to the local development key.
+
+APKs are generated in `manager/build/outputs/apk/debug/` and `manager/build/outputs/apk/release/`. The explicit revision matches the current build; without `versionCodeOverride`, the version code is derived from the current branch's commit count.
+
+See [build notes](TEST_BUILD.md) for the compatibility changes and validation limits. Keep upstream's license and notices; the original license section follows below.
 
 The `:manager:assembleDebug` task generates a debuggable server. You can attach a debugger to `shizuku_server` to debug the server. Be aware that, in Android Studio, "Run/Debug configurations" - "Always install with package manager" should be checked, so that the server will use the latest code.
 
