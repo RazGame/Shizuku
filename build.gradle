@@ -29,6 +29,6 @@ def gitCommitId = 'git rev-parse --short HEAD'.execute([], project.rootDir).text
 def gitCommitCount = Integer.parseInt('git rev-list --count HEAD'.execute([], project.rootDir).text.trim())
 def baseVersionName = "${api_version_major}.6.0"
 ext {
-    versionCode = gitCommitCount
-    versionName = "${baseVersionName}.r${gitCommitCount}.${gitCommitId}"
+    versionCode = Integer.parseInt((findProperty('versionCodeOverride') ?: gitCommitCount).toString())
+    versionName = "${baseVersionName}.r${versionCode}-razgame-rikka-beta"
 }

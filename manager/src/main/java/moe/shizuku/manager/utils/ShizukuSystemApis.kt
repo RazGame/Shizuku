@@ -2,14 +2,14 @@ package moe.shizuku.manager.utils
 
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import android.content.pm.ParceledListSlice
 import android.os.RemoteException
-import rikka.hidden.compat.PackageManagerApis
+import android.os.ServiceManager
 import rikka.hidden.compat.PermissionManagerApis
 import rikka.hidden.compat.UserManagerApis
 import rikka.hidden.compat.util.SystemServiceBinder
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuBinderWrapper
+import rikka.shizuku.server.util.InstalledPackagesCompat
 
 object ShizukuSystemApis {
 
@@ -57,15 +57,12 @@ object ShizukuSystemApis {
         return if (!Shizuku.pingBinder()) {
             ArrayList()
         } else try {
-            val listSlice: ParceledListSlice<PackageInfo>? =
-                PackageManagerApis.getInstalledPackages(
-                    flags,
-                    userId
-                )
-            return if (listSlice != null) {
-                listSlice.list
-            } else ArrayList()
+            InstalledPackagesCompat.getInstalledPackages(
+                flags, userId, ShizukuBinderWrapper(ServiceManager.getService("package"))
+            )
         } catch (tr: RemoteException) {
+            throw RuntimeException(tr.message, tr)
+        } catch (tr: ReflectiveOperationException) {
             throw RuntimeException(tr.message, tr)
         }
     }

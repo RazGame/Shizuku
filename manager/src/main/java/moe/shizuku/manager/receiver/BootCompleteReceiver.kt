@@ -19,6 +19,7 @@ import moe.shizuku.manager.ShizukuSettings.LaunchMethod
 import moe.shizuku.manager.adb.AdbClient
 import moe.shizuku.manager.adb.AdbKey
 import moe.shizuku.manager.adb.AdbMdns
+import moe.shizuku.manager.adb.AdbSettings
 import moe.shizuku.manager.adb.PreferenceAdbKeyStore
 import moe.shizuku.manager.starter.Starter
 import moe.shizuku.manager.utils.UserHandleCompat
@@ -60,9 +61,7 @@ class BootCompleteReceiver : BroadcastReceiver() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun adbStart(context: Context) {
         val cr = context.contentResolver
-        Settings.Global.putInt(cr, "adb_wifi_enabled", 1)
-        Settings.Global.putInt(cr, Settings.Global.ADB_ENABLED, 1)
-        Settings.Global.putLong(cr, "adb_allowed_connection_time", 0L)
+        AdbSettings.enableDebugging(context)
         val pending = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
             val latch = CountDownLatch(1)
@@ -79,7 +78,7 @@ class BootCompleteReceiver : BroadcastReceiver() {
                 }
                 latch.countDown()
             }
-            if (Settings.Global.getInt(cr, "adb_wifi_enabled", 0) == 1) {
+            if (Build.VERSION.SDK_INT >= 37 || Settings.Global.getInt(cr, "adb_wifi_enabled", 0) == 1) {
                 adbMdns.start()
                 latch.await(3, TimeUnit.SECONDS)
                 adbMdns.stop()
